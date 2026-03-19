@@ -41,16 +41,16 @@ html_code = """
 
         .container {
             background-color: var(--container-bg);
-            padding: 1rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 1rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px;
+            max-width: 800px;
             text-align: center;
         }
 
-        h1 { font-size: 1.5rem; margin-bottom: 0.2rem; }
-        .description { color: var(--secondary-color); margin-bottom: 1rem; font-size: 0.85rem; }
+        h1 { font-size: 1.3rem; margin-bottom: 0.1rem; }
+        .description { color: var(--secondary-color); margin-bottom: 0.5rem; font-size: 0.8rem; }
 
         .controls { display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
         .input-group { display: flex; align-items: center; gap: 0.5rem; }
@@ -64,9 +64,9 @@ html_code = """
 
         .status { margin-bottom: 1rem; font-weight: 600; color: var(--primary-color); min-height: 1.2rem; }
 
-        .grid-wrapper, .result-grids { display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
-        .grid-item { flex: 1; min-width: 280px; max-width: 380px; }
-        .grid-item h3 { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--secondary-color); }
+        .grid-wrapper, .result-grids { display: flex; justify-content: center; gap: 1rem; margin-top: 0.2rem; flex-wrap: wrap; }
+        .grid-item { flex: 1; min-width: 250px; max-width: 300px; }
+        .grid-item h3 { margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--secondary-color); }
 
         .grid-container {
             display: grid;
@@ -291,7 +291,7 @@ html_code = """
 </html>
 """
 
-components.html(html_code, height=1000, scrolling=True)
+components.html(html_code, height=700, scrolling=True)
 
 st.sidebar.markdown("""
 # GridWorld RL
