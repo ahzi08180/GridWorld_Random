@@ -41,16 +41,16 @@ html_code = """
 
         .container {
             background-color: var(--container-bg);
-            padding: 2rem;
+            padding: 1rem 1.5rem;
             border-radius: 1rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             text-align: center;
         }
 
-        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .description { color: var(--secondary-color); margin-bottom: 1.5rem; font-size: 0.9rem; }
+        h1 { font-size: 1.5rem; margin-bottom: 0.2rem; }
+        .description { color: var(--secondary-color); margin-bottom: 1rem; font-size: 0.85rem; }
 
         .controls { display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
         .input-group { display: flex; align-items: center; gap: 0.5rem; }
@@ -64,9 +64,9 @@ html_code = """
 
         .status { margin-bottom: 1rem; font-weight: 600; color: var(--primary-color); min-height: 1.2rem; }
 
-        .grid-wrapper, .result-grids { display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; flex-wrap: wrap; }
-        .grid-item { flex: 1; min-width: 300px; max-width: 450px; }
-        .grid-item h3 { margin-bottom: 0.8rem; font-size: 1rem; color: var(--secondary-color); }
+        .grid-wrapper, .result-grids { display: flex; justify-content: center; gap: 1.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .grid-item { flex: 1; min-width: 280px; max-width: 380px; }
+        .grid-item h3 { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--secondary-color); }
 
         .grid-container {
             display: grid;
