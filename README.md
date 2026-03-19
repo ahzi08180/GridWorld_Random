@@ -1,14 +1,14 @@
-# GridWorld Random Policy & Evaluation
+# GridWorld Value Iteration & Optimal Policy
 
-這是一個基於 Flask 的 GridWorld 網格世界視覺化工具，用於展示強化學習中的**隨機策略 (Random Policy)** 與 **策略評估 (Policy Evaluation)**。
+這是一個基於 Flask 的 GridWorld 網格世界視覺化工具，用於展示強化學習中的**價值迭代 (Value Iteration)** 與 **最佳政策推導 (Optimal Policy Derivation)**。
 
 ## 功能特點
 - **自定義網格**：支援 $n \times n$ 維度（5-9），可自由設定起點、終點與障礙物。
-- **全自動流程**：選取完障礙物後，系統將自動生成隨機策略並進行迭代策略評估。
+- **價值迭代算法**：使用價值迭代算法自動計算最佳價值函數和最佳政策。
 - **雙圖並行展示**：
-  - **左圖**：展示隨機生成的行動策略（方向箭頭）。
+  - **左圖**：展示推導出的最佳政策（方向箭頭）。
   - **右圖**：展示計算出的狀態價值函數 $V(s)$。
-- **互動式體驗**：支援即時重新生成策略，觀察價值函數的動態變化。
+- **互動式體驗**：支援即時重新執行價值迭代，觀察結果變化。
 
 ## 專案展示
 ![GridWorld Demo](https://gridworldrandom-gpywymxsy6njquyjluhf6g.streamlit.app/)
@@ -38,9 +38,9 @@
 4. 點擊 "Deploy" 即可在線觀看！
 
 ## 數學原理
-本專案使用**迭代策略評估 (Iterative Policy Evaluation)**：
-$$V_{k+1}(s) = \sum_{a} \pi(a|s) \sum_{s', r} p(s', r | s, a) [r + \gamma V_k(s')]$$
+本專案使用**價值迭代 (Value Iteration)**：
+\[ V_{k+1}(s) = \max_a \sum_{s', r} p(s', r | s, a) [r + \gamma V_k(s')] \]
 其中設定如下：
-- 獎勵 (Reward): 每步 $-1$
+- 獎勵 (Reward): 到達終點 +10，每步移動 -1
 - 折扣因子 (Gamma): $0.9$
-- 策略 ($\pi$): 隨機生成的確定性策略
+- 最佳政策 ($\pi^*$): 每個狀態選擇使價值最大的行動

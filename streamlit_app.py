@@ -126,7 +126,7 @@ html_code = """
         <div id="result-view" class="result-view" style="display: none;">
             <div class="result-grids">
                 <div class="grid-item">
-                    <h3>隨機策略 (Policy)</h3>
+                    <h3>最佳政策 (Optimal Policy)</h3>
                     <div id="policy-grid" class="grid-container"></div>
                 </div>
                 <div class="grid-item">
@@ -135,7 +135,7 @@ html_code = """
                 </div>
             </div>
             <div class="result-controls">
-                <button id="regen-policy-btn" class="accent-btn">重新生成策略</button>
+                <button id="regen-policy-btn" class="accent-btn">重新執行價值迭代</button>
             </div>
         </div>
     </div>
@@ -171,7 +171,7 @@ html_code = """
                         const rem = (currentN - 2) - obstacles.length;
                         statusMessage.textContent = `選擇障礙物 (X)，剩 ${rem} 個`; 
                         break;
-                    case 'FINISHED': statusMessage.textContent = '完成！自動評估隨機策略中...'; break;
+                    case 'FINISHED': statusMessage.textContent = '完成！自動執行價值迭代中...'; break;
                 }
             }
 
@@ -228,21 +228,13 @@ html_code = """
 
             async function runRL() {
                 const directions = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
-                policy = {};
-                const pCells = policyGrid.querySelectorAll('.cell');
-                pCells.forEach((cell, i) => {
-                    if (i === endCell || obstacles.includes(i)) return;
-                    const dir = directions[Math.floor(Math.random() * 4)];
-                    policy[i] = dir;
-                    cell.querySelector('.arrow').textContent = arrowMap[dir];
-                });
-
-                // Iterative Policy Evaluation in JS
                 const n = currentN;
                 const gamma = 0.9;
-                const reward = -1;
+                const stepReward = -1;
+                const goalReward = 10;
                 const threshold = 1e-4;
                 let V = new Array(n * n).fill(0);
+                let policy = {};
 
                 const getNext = (idx, action) => {
                     let r = Math.floor(idx / n), c = idx % n;
@@ -253,26 +245,46 @@ html_code = """
                     return idx;
                 };
 
+                // Value Iteration
                 for (let iter = 0; iter < 1000; iter++) {
                     let delta = 0;
                     let V_new = [...V];
                     for (let i = 0; i < n * n; i++) {
                         if (i === endCell || obstacles.includes(i)) continue;
-                        const nextIdx = getNext(i, policy[i]);
-                        const newVal = reward + gamma * V[nextIdx];
-                        V_new[i] = newVal;
-                        delta = Math.max(delta, Math.abs(V[i] - newVal));
+                        let maxVal = -Infinity;
+                        let bestAction = null;
+                        for (let action of directions) {
+                            const nextIdx = getNext(i, action);
+                            const reward = (nextIdx === endCell) ? goalReward : stepReward;
+                            const val = reward + gamma * V[nextIdx];
+                            if (val > maxVal) {
+                                maxVal = val;
+                                bestAction = action;
+                            }
+                        }
+                        V_new[i] = maxVal;
+                        policy[i] = bestAction;
+                        delta = Math.max(delta, Math.abs(V[i] - maxVal));
                     }
                     V = V_new;
                     if (delta < threshold) break;
                 }
 
+                // Display optimal policy
+                const pCells = policyGrid.querySelectorAll('.cell');
+                pCells.forEach((cell, i) => {
+                    if (i === endCell || obstacles.includes(i)) return;
+                    const action = policy[i];
+                    cell.querySelector('.arrow').textContent = arrowMap[action];
+                });
+
+                // Display value function
                 const vCells = valueGrid.querySelectorAll('.cell');
                 vCells.forEach((cell, i) => {
                     if (i === endCell) cell.querySelector('.value').textContent = '0.00';
                     else if (!obstacles.includes(i)) cell.querySelector('.value').textContent = V[i].toFixed(2);
                 });
-                statusMessage.textContent = '策略評估完成！隨機策略與 V(s) 已更新。';
+                statusMessage.textContent = '價值迭代完成！最佳政策與 V(s) 已更新。';
             }
 
             generateBtn.onclick = () => {
@@ -297,8 +309,8 @@ components.html(html_code, height=700, scrolling=True)
 
 st.sidebar.markdown("""
 # GridWorld RL
-這是一個視覺化的強化學習網格世界。
+這是一個視覺化的強化學習網格世界，使用價值迭代算法推導最佳政策。
 1. **設定**: 指定 $n \\times n$。
 2. **操作**: 點擊網格依序設定 S (起點), E (終點), X (障礙物)。
-3. **自動評估**: 設定完成後，JS 會在瀏覽器端直接計算迭代策略評估。
+3. **自動計算**: 設定完成後，JS 會在瀏覽器端直接計算價值迭代，顯示最佳政策與價值函數。
 """)

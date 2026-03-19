@@ -14,28 +14,27 @@ def evaluate():
     start = data['start']
     end = data['end']
     obstacles = data['obstacles']
-    policy = data['policy'] # Dict: {index: direction}
 
     # Parameters
     gamma = 0.9
     threshold = 1e-4
-    reward_step = -1
+    step_reward = -1
+    goal_reward = 10
     
     # Initialize V
     V = np.zeros(n * n)
+    policy = {}
     
     # Directions: 0: Up, 1: Down, 2: Left, 3: Right
-    # (row, col) transformations
-    actions = {
-        'UP': (-1, 0),
-        'DOWN': (1, 0),
-        'LEFT': (0, -1),
-        'RIGHT': (0, 1)
-    }
+    actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
 
     def get_next_state(s, action_name):
         r, c = divmod(s, n)
-        dr, dc = actions[action_name]
+        dr, dc = 0, 0
+        if action_name == 'UP': dr = -1
+        elif action_name == 'DOWN': dr = 1
+        elif action_name == 'LEFT': dc = -1
+        elif action_name == 'RIGHT': dc = 1
         nr, nc = r + dr, c + dc
         
         # Check boundaries
@@ -47,31 +46,35 @@ def evaluate():
             return next_s
         return s
 
-    # Iterative Policy Evaluation
+    # Value Iteration
     while True:
         delta = 0
         new_V = np.copy(V)
+        new_policy = {}
         for s in range(n * n):
             if s == end or s in obstacles:
                 continue
             
-            action_name = policy.get(str(s))
-            if not action_name: continue
+            max_val = -np.inf
+            best_action = None
+            for action in actions:
+                next_s = get_next_state(s, action)
+                reward = goal_reward if next_s == end else step_reward
+                val = reward + gamma * V[next_s]
+                if val > max_val:
+                    max_val = val
+                    best_action = action
             
-            next_s = get_next_state(s, action_name)
-            
-            # V(s) = R + gamma * V(s')
-            # Since policy is deterministic: sum is just 1 * [...]
-            v = reward_step + gamma * V[next_s]
-            
-            new_V[s] = v
-            delta = max(delta, abs(V[s] - v))
+            new_V[s] = max_val
+            new_policy[str(s)] = best_action
+            delta = max(delta, abs(V[s] - max_val))
         
         V = new_V
+        policy = new_policy
         if delta < threshold:
             break
 
-    return jsonify({'values': V.tolist()})
+    return jsonify({'values': V.tolist(), 'policy': policy})
 
 if __name__ == '__main__':
     app.run(debug=True)
