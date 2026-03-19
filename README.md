@@ -11,7 +11,7 @@
 - **互動式體驗**：支援即時重新執行價值迭代，觀察結果變化。
 
 ## 專案展示
-![GridWorld Demo](https://gridworldrandom-gpywymxsy6njquyjluhf6g.streamlit.app/)
+https://gridworldrandom-gpywymxsy6njquyjluhf6g.streamlit.app/
 
 ## 技術堆疊
 - **Backend**: Python, Flask, NumPy
