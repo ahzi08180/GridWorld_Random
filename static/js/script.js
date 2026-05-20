@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const regenPolicyBtn = document.getElementById('regen-policy-btn');
     const resetBtn = document.getElementById('reset-btn');
     const gridContainer = document.getElementById('grid-container');
-    const policyGrid = document.getElementById('policy-grid');
-    const valueGrid = document.getElementById('value-grid');
+    const randomPolicyGrid = document.getElementById('random-policy-grid');
+    const randomValueGrid = document.getElementById('random-value-grid');
+    const optimalPolicyGrid = document.getElementById('optimal-policy-grid');
+    const optimalValueGrid = document.getElementById('optimal-value-grid');
     const statusMessage = document.getElementById('status-message');
     const selectionView = document.getElementById('selection-view');
     const resultView = document.getElementById('result-view');
@@ -100,19 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
         selectionView.style.display = 'none';
         resultView.style.display = 'block';
         
-        // Create both result grids
-        createGrid(policyGrid, currentN);
-        createGrid(valueGrid, currentN);
+        // Create all result grids
+        [randomPolicyGrid, randomValueGrid, optimalPolicyGrid, optimalValueGrid].forEach(grid => createGrid(grid, currentN));
         
-        // Sync selection state to result grids
+        // Sync selection state to all result grids
         syncGrids();
         
-        // Auto generate and evaluate
-        await generateAndEvaluate();
+        // Auto generate and solve
+        await generateAndSolve();
     }
 
     function syncGrids() {
-        [policyGrid, valueGrid].forEach(container => {
+        [randomPolicyGrid, randomValueGrid, optimalPolicyGrid, optimalValueGrid].forEach(container => {
             const cells = container.querySelectorAll('.cell');
             cells.forEach((cell, index) => {
                 const label = cell.querySelector('.label');
@@ -130,48 +131,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function generateAndEvaluate() {
+    async function generateAndSolve() {
         const directions = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
-        policy = {};
+        const random_policy = {};
         
-        // Clear old arrows and values
-        const policyCells = policyGrid.querySelectorAll('.cell');
-        const valueCells = valueGrid.querySelectorAll('.cell');
-        
-        policyCells.forEach((cell, index) => {
+        // Clear and generate random policy
+        const randomPolicyCells = randomPolicyGrid.querySelectorAll('.cell');
+        randomPolicyCells.forEach((cell, index) => {
             const i = parseInt(index);
             if (i === endCell || obstacles.includes(i)) return;
-            
             const randomDir = directions[Math.floor(Math.random() * directions.length)];
-            policy[i] = randomDir;
+            random_policy[i] = randomDir;
             cell.querySelector('.arrow').textContent = arrowMap[randomDir];
         });
 
-        statusMessage.textContent = '正在進行策略評估...';
+        statusMessage.textContent = '正在計算隨機策略與最佳策略...';
         try {
-            const response = await fetch('/evaluate', {
+            const response = await fetch('/solve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     n: currentN, start: startCell, end: endCell,
-                    obstacles: obstacles, policy: policy
+                    obstacles: obstacles, random_policy: random_policy
                 })
             });
             const data = await response.json();
-            const values = data.values;
             
-            valueCells.forEach((cell, index) => {
-                const val = values[index];
+            // 1. Update Random Value Grid
+            const randomValueCells = randomValueGrid.querySelectorAll('.cell');
+            data.random.values.forEach((val, index) => {
                 if (index !== endCell && !obstacles.includes(index)) {
-                    cell.querySelector('.value').textContent = val.toFixed(2);
+                    randomValueCells[index].querySelector('.value').textContent = val.toFixed(2);
                 } else if (index === endCell) {
-                    cell.querySelector('.value').textContent = '0.00';
+                    randomValueCells[index].querySelector('.value').textContent = '0.00';
                 }
             });
-            statusMessage.textContent = '直接跳出圖表：隨機策略 vs. 策略評估數值';
+
+            // 2. Update Optimal Policy Grid
+            const optimalPolicyCells = optimalPolicyGrid.querySelectorAll('.cell');
+            const optPol = data.optimal.policy;
+            optimalPolicyCells.forEach((cell, index) => {
+                if (optPol[index]) {
+                    cell.querySelector('.arrow').textContent = arrowMap[optPol[index]];
+                }
+            });
+
+            // 3. Update Optimal Value Grid
+            const optimalValueCells = optimalValueGrid.querySelectorAll('.cell');
+            data.optimal.values.forEach((val, index) => {
+                if (index !== endCell && !obstacles.includes(index)) {
+                    optimalValueCells[index].querySelector('.value').textContent = val.toFixed(2);
+                } else if (index === endCell) {
+                    optimalValueCells[index].querySelector('.value').textContent = '0.00';
+                }
+            });
+
+            statusMessage.textContent = '計算完成！對照如下：';
         } catch (error) {
             console.error('Error:', error);
-            statusMessage.textContent = '評估出錯，請檢查後台';
+            statusMessage.textContent = '計算出錯，請檢查後台';
         }
     }
 
@@ -196,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     regenPolicyBtn.addEventListener('click', () => {
-        generateAndEvaluate();
+        generateAndSolve();
     });
 
     resetBtn.addEventListener('click', () => {

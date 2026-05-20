@@ -31,20 +31,40 @@
             <div id="grid-container" class="grid-container"></div>
         </div>
 
-        <!-- Dual Result Grids (Hidden by default) -->
+        <!-- Results View -->
         <div id="result-view" class="result-view" style="display: none;">
-            <div class="result-grids">
-                <div class="grid-item">
-                    <h3>隨機策略 (Policy)</h3>
-                    <div id="policy-grid" class="grid-container"></div>
-                </div>
-                <div class="grid-item">
-                    <h3>價值函數 (V(s))</h3>
-                    <div id="value-grid" class="grid-container"></div>
+            <!-- Random Strategy Section -->
+            <div class="strategy-section">
+                <h2 class="section-title">隨機策略 (Random Strategy)</h2>
+                <div class="result-grids">
+                    <div class="grid-item">
+                        <h3>隨機策略矩陣 (Policy)</h3>
+                        <div id="random-policy-grid" class="grid-container"></div>
+                    </div>
+                    <div class="grid-item">
+                        <h3>隨機價值矩陣 (Value)</h3>
+                        <div id="random-value-grid" class="grid-container"></div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Optimal Strategy Section -->
+            <div class="strategy-section">
+                <h2 class="section-title">最佳策略 (Optimal Strategy)</h2>
+                <div class="result-grids">
+                    <div class="grid-item">
+                        <h3>最佳策略矩陣 (Policy)</h3>
+                        <div id="optimal-policy-grid" class="grid-container"></div>
+                    </div>
+                    <div class="grid-item">
+                        <h3>最佳價值矩陣 (Value)</h3>
+                        <div id="optimal-value-grid" class="grid-container"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="result-controls">
-                <button id="regen-policy-btn" class="accent-btn">重新生成策略</button>
+                <button id="regen-policy-btn" class="accent-btn">重新生成隨機策略與對照</button>
             </div>
         </div>
     </div>
