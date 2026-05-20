@@ -359,13 +359,13 @@ html_code = """
 
 components.html(html_code, height=900, scrolling=True)
 
-st.sidebar.markdown(\"\"\"
+st.sidebar.markdown("""
 # GridWorld RL 策略對照
 這是一個視覺化的強化學習網格世界，對照 **隨機策略** 與 **最佳策略 (Value Iteration)**。
 
-1. **設定**: 指定 $n \\times n$ (5-9)。
+1. **設定**: 指定 $n \times n$ (5-9)。
 2. **操作**: 點擊網格依序設定 **S (起點)**, **E (終點)**, **X (障礙物)**。
 3. **對照**: 設定完成後，JS 會在瀏覽器端同時計算：
    - **隨機策略**的價值評估。
    - **最佳策略** (透過 Value Iteration) 及其收斂價值。
-\"\"\")
+""")
